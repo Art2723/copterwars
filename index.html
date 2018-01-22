@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+<!--        <script type="text/javascript" src="spritesheet.js"></script> -->
+</head>
+<body>
+    <canvas id="game"></canvas>
+	<script>
+//---------GLOBAL VARS----------------
+    var canvas = document.getElementById("game");
+    var ctx = canvas.getContext('2d');
+    canvas.width = 800;
+    canvas.height = 600;
+    var
+    frame,
+    stopMain, 
+    heroX, heroY, 
+    rightPressed = false, leftPressed = false, upPressed = false, downPressed = false, firePressed = false,
+    scale = 1,
+    KEY_LEFT  = 37,
+    KEY_UP    = 38,
+    KEY_RIGHT = 39,
+    KEY_DOWN  = 40,
+    KEY_FIRE  = 32,
+    CAM_LEFT  = 68,
+    CAM_RIGHT = 65,
+    CAM_UP    = 83,
+    CAM_DOWN  = 87;
+
+var hero={}, s_hero={};
+
+var img = new Image();
+img.onload = onImgLoad;
+img.src = "sprites3.png";
+
+function onImgLoad(){
+    s_hero = {
+        img:img,
+        default:{
+            transform:0,
+            rotate:0,
+            //x, y, width, height
+            sprites: [
+                new Sprite(22, 36, 162, 44),
+                new Sprite(22, 82, 162, 44),
+                new Sprite(22, 126, 162, 44),
+                new Sprite(22, 168, 162, 44)
+            ]
+        }
+    };
+start();
+};
+
+
+
+function Sprite(x, y, width, height) {
+    //this.img = img;
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+};
+
+
+        
+//---------KEYS----------------------
+    document.addEventListener("keydown", keyDownHandler, false);
+    document.addEventListener("keyup", keyUpHandler, false);
+
+    function keyDownHandler(e) {
+        if(e.keyCode == KEY_RIGHT) {
+            rightPressed = true;
+        }
+        else if(e.keyCode == KEY_LEFT) {
+            leftPressed = true;
+        }
+        else if(e.keyCode == KEY_UP){
+            upPressed = true;
+        }
+        else if(e.keyCode == KEY_DOWN){
+            downPressed = true;
+        }
+        else if(e.keyCode == KEY_FIRE){
+            firePressed = true;
+        }
+
+    }
+    function keyUpHandler(e) {
+        if(e.keyCode == 39) {
+            rightPressed = false;
+        }
+        else if(e.keyCode == 37) {
+            leftPressed = false;
+        }
+        else if(e.keyCode == 38){
+            upPressed = false;
+        }
+        else if(e.keyCode == 40){
+            downPressed = false;
+        }
+        else if(e.keyCode == 32){
+            firePressed = false;
+        }
+    }
+
+//-------------Hero object ------------
+    function Unit(sprite) {
+        this.sprite = sprite;
+        this.width = sprite.default.sprites[0].width;
+        this.height = sprite.default.sprites[0].height;
+    };
+    Unit.prototype.draw = function (x,y) {
+        //ctx.save();
+        ctx.drawImage(this.sprite.img, this.sprite.default.sprites[0].x, this.sprite.default.sprites[0].y, this.sprite.default.sprites[0].width, this.sprite.default.sprites[0].height,x, y, this.sprite.default.sprites[0].width, this.sprite.default.sprites[0].height);
+        //ctx.drawImage(this.s_unit[this.frame].img, this.s_unit[this.frame].x, this.s_unit[this.frame].y, this.s_unit[this.frame].width, this.s_unit[this.frame].height,this.x, this.y, this.s_unit[this.frame].width, this.s_unit[this.frame].height);
+        //ctx.restore();
+    };
+    Unit.prototype.update = function() {
+       if(rightPressed && heroX < canvas.width-this.width) {
+            heroX += 7;
+        };
+        if(leftPressed && heroX > 0) {
+            heroX -= 7;
+        };
+        if(upPressed && heroY > 0) {
+            heroY -= 7;
+        };
+        if(downPressed && heroY < canvas.height-this.height) {
+            heroY += 7;
+        };
+        if(firePressed) {
+
+        };
+
+    };
+        
+        
+
+//--------------DRAW Functions---------
+    function drawHero(){
+        ctx.beginPath();
+        ctx.arc(heroX, heroY, 22, 0, Math.PI*2);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+//--------------UPDATE Functions-------
+    function updateKeys(){
+        if(rightPressed && heroX < canvas.width) {
+            heroX += 7;
+        };
+        if(leftPressed && heroX > 0) {
+            heroX -= 7;
+        };
+        if(upPressed && heroY > 0) {
+            heroY -= 7;
+        };
+        if(downPressed && heroY < canvas.height) {
+            heroY += 7;
+        };
+        if(firePressed) {
+
+        };
+    }; 
+        
+//-------------MAIN Functions--------  
+    function init(){
+        frame = 0;
+        heroX = canvas.width/2;
+        heroY = canvas.height/2;
+        hero = new Unit(s_hero);
+    };
+
+    function update(){
+        //updateKeys();
+        hero.update();
+    };
+
+    function render(){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        //drawHero();
+        hero.draw(heroX, heroY);
+       
+    }
+//---------GAME LOOP------------------
+function start(){
+    init();
+
+    (function () {
+      function main( tFrame ) {
+        stopMain = window.requestAnimationFrame( main );
+
+        update( tFrame ); //Call your update method. In our case, we give it rAF's timestamp.
+        render();
+      }
+
+      main(); // Start the cycle
+    })();
+};
+
+    </script>
+    
+</body>
+</html>
+
